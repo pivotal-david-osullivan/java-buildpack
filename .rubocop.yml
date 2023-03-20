@@ -30,6 +30,8 @@ Metrics/MethodLength:
   Max: 25
 Naming/MethodParameterName:
   Enabled: false
+Naming/BlockForwarding:
+  Enabled: false
 Metrics/ParameterLists:
   Max: 10
 Metrics/PerceivedComplexity:
