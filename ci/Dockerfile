@@ -1,15 +1,14 @@
-ARG base_image=ubuntu:bionic
+ARG base_image=ubuntu:jammy
 FROM ${base_image}
 
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     git \
-    libssl1.0-dev \
+    libssl-dev \
     libreadline-dev \
     lsb-release \
     locales \
-    python \
     zip \
     zlib1g-dev \
  && apt-get clean \
