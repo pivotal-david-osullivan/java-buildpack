@@ -21,7 +21,11 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-eval "$(rbenv init -)"
+if [[ "${CF_STACK}" == "cflinuxfs4" ]]; then
+  export PATH="${RUBY_DIR}/bin:${PATH:-}"
+else 
+  eval "$(rbenv init -)"
+fi
 
 pushd java-buildpack
   bundle install --quiet
