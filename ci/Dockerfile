@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libreadline-dev \
     lsb-release \
     locales \
+    python3
     zip \
     zlib1g-dev \
  && apt-get clean \
@@ -25,7 +26,7 @@ RUN eval "$(rbenv init -)" \
 
 RUN eval "$(rbenv init -)" \
  && git clone https://github.com/sstephenson/rbenv-default-gems.git $(rbenv root)/plugins/rbenv-default-gems \
- && echo 'bundler 2.4' >> $(rbenv root)/default-gems
+ && echo 'bundler 2.3.26' >> $(rbenv root)/default-gems
 
 RUN eval "$(rbenv init -)" \
  && rbenv install 3.1.3
