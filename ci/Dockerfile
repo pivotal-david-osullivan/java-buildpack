@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     libreadline-dev \
     lsb-release \
     locales \
-    python3
+    python3 \
     zip \
     zlib1g-dev \
  && apt-get clean \
