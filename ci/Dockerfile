@@ -8,9 +8,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libreadline-dev \
     libyaml-0-2 \
-    lsb-release \
     locales \
-    python3 \
     zip \
     zlib1g-dev \
  && apt-get clean \
