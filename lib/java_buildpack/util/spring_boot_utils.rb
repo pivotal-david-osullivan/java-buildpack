@@ -95,6 +95,10 @@ module JavaBuildpack
         JavaBuildpack::Util::JavaMainUtils.manifest(application)[SPRING_BOOT_VERSION]
       end
 
+      def version_at_least?(application, ver)
+        Gem::Version.new((version_strict application)).release >= Gem::Version.new(ver)
+      end
+
       private
 
       SPRING_BOOT_LIB = 'Spring-Boot-Lib'
