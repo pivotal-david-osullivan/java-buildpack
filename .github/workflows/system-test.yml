@@ -10,7 +10,7 @@ jobs:
             - name: Checkout test apps repo
               uses: actions/checkout@v4
               with: 
-                repository: 'cloudfoundry/java-buildpack-test-applications'
+                repository: 'cloudfoundry/java-test-applications'
             - name: Checkout system test repo
               uses: actions/checkout@v4
               with: 
