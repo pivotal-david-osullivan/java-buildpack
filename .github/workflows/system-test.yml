@@ -22,6 +22,7 @@ jobs:
                 SVC_ACC: ${{ secrets.JAVA_BUILDPACKS_SHEPHERD_SVC_ACC }}
                 POOL_NAME: ${{ vars.POOL_NAME }}
                 LEASE_DURATION: ${{ vars.LEASE_DURATION }}
+                SHEPHERD_URL: ${{ vars.SHEPHERD_URL }}
               run: |
                 #!/usr/bin/env bash
 
