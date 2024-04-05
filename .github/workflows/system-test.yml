@@ -29,6 +29,10 @@ jobs:
                 set -euo pipefail
                 source "$GITHUB_WORKSPACE"/java-buildpack-system-test/ci/common.sh
 
+                curl https://artifactory.eng.vmware.com/artifactory/shepherd-prod-generic-local/shepherd2/v0.7.6-client/shepherd-linux-amd64 -o shepherd
+                chmod +x shepherd
+                alias shepherd="${PWD}"/shepherd
+
                 shepherd config location "${SHEPHERD_URL}"
                 shepherd config auth-method service-account 
                 shepherd login service-account "${SVC_ACC}"
