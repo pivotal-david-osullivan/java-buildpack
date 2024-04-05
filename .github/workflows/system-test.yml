@@ -11,10 +11,12 @@ jobs:
               uses: actions/checkout@v4
               with: 
                 repository: 'cloudfoundry/java-test-applications'
+                path: java-test-applications
             - name: Checkout system test repo
               uses: actions/checkout@v4
               with: 
                 repository: 'cloudfoundry/java-buildpack-system-test'
+                path: java-buildpack-system-test
             - name: Claim Environment
               env:
                 SVC_ACC: ${{ secrets.JAVA_BUILDPACKS_SHEPHERD_SVC_ACC }}
@@ -24,7 +26,7 @@ jobs:
                 #!/usr/bin/env bash
 
                 set -euo pipefail
-                source "$(dirname "$0")"/common.sh
+                source "$HOME"/java-buildpack-system-test/common.sh
 
                 shepherd config location "${SHEPHERD_URL}"
                 shepherd config auth-method service-account 
