@@ -1,4 +1,6 @@
 name: System Tests
+"on":
+    workflow_dispatch: {}
 jobs:
     get-test-apps:
         name: Get Test Applications
@@ -49,6 +51,6 @@ jobs:
                     --argjson credentials "${CREDENTIALS}" \
                     '{ name: $claim.output.name, username: $credentials.identity, password: $credentials.password }' \
                     > "${ROOT}"/environment/credentials.json
-             - name: Run System Tests
-               run: java-buildpack-system-test/ci/system-test.sh
-               shell: bash
+            - name: Run System Tests
+              run: java-buildpack-system-test/ci/system-test.sh
+              shell: bash
