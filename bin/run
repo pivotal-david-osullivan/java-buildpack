@@ -95,7 +95,6 @@ function main() {
 
   if ! which ruby > /dev/null; then
     mkdir -p "${RUBY_DIR}"
-
     util::install
     util::environment::setup
   fi

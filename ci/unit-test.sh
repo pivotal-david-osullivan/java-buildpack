@@ -24,6 +24,6 @@ export LC_ALL=en_US.UTF-8
 eval "$(rbenv init -)"
 
 pushd java-buildpack
-  bundle install --quiet
+  bundle install 
   bundle exec rake
 popd
