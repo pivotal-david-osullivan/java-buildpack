@@ -1,0 +1,54 @@
+name: System Tests
+jobs:
+    get-test-apps:
+        name: Get Test Applications
+        runs-on:
+            - ubuntu-latest
+        steps:
+            - name: Checkout test apps repo
+              uses: actions/checkout@v4
+              with: 
+                repository: 'cloudfoundry/java-buildpack-test-applications'
+            - name: Checkout system test repo
+              uses: actions/checkout@v4
+              with: 
+                repository: 'cloudfoundry/java-buildpack-system-test'
+            - name: Claim Environment
+              env:
+                SVC_ACC: ${{ secrets.JAVA_BUILDPACKS_SHEPHERD_SVC_ACC }}
+                POOL_NAME: ${{ vars.POOL_NAME }}
+                LEASE_DURATION: ${{ vars.LEASE_DURATION }}
+              run: |
+                #!/usr/bin/env bash
+
+                set -euo pipefail
+                source "$(dirname "$0")"/common.sh
+
+                shepherd config location "${SHEPHERD_URL}"
+                shepherd config auth-method service-account 
+                shepherd login service-account "${SVC_ACC}"
+
+                printf "Claiming environment from %s\n" "${POOL_NAME}"
+
+                CLAIM=$(shepherd create lease --pool-name ${POOL_NAME} --duration "${LEASE_DURATION}" --json)
+
+                printf "Claimed %s\n" "$(jq -n -r -c --argjson claim "${CLAIM}" '$claim.output.name')"
+
+                CREDENTIALS=$(om \
+                  --target "$(jq -n -r --argjson claim "${CLAIM}" '$claim.output.ops_manager.url')" \
+                  --username "$(jq -n -r --argjson claim "${CLAIM}" '$claim.output.ops_manager.username')" \
+                  --password "$(jq -n -r --argjson claim "${CLAIM}" '$claim.output.ops_manager.password')" \
+                  credentials \
+                  --product-name cf \
+                  --credential-reference .uaa.admin_credentials \
+                  --format json)
+
+                  jq \
+                    -n -r \
+                    --argjson claim "${CLAIM}" \
+                    --argjson credentials "${CREDENTIALS}" \
+                    '{ name: $claim.output.name, username: $credentials.identity, password: $credentials.password }' \
+                    > "${ROOT}"/environment/credentials.json
+             - name: Run System Tests
+               run: java-buildpack-system-test/ci/system-test.sh
+               shell: bash
