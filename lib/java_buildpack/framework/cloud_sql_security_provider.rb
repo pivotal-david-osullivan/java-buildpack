@@ -33,24 +33,17 @@ module JavaBuildpack
       def compile
         return unless supports?
 
-        @droplet.copy_resources
-
         credentials = @application.services.find_service(FILTER, 'sslrootcert', 'sslcert', 'sslkey')['credentials']
 
-        pkcs12 = merge_client_credentials credentials
-        add_client_credentials pkcs12
-
-        add_trusted_certificate credentials['sslrootcert']
       end
 
       # (see JavaBuildpack::Component::BaseComponent#release)
       def release
         return unless supports?
-
-        java_opts = @droplet.java_opts
-
-        add_additional_properties(java_opts)
-      end
+        
+        FileUtils.mkdir_p (@droplet.root + '.profile.d/')
+        @droplet.copy_resources (@droplet.root + '.profile.d/')
+     end
 
       def detect
         CloudSqlSecurityProvider.to_s.dash_case
@@ -65,29 +58,13 @@ module JavaBuildpack
       private
 
       FILTER = /csb-google-/.freeze
+      POSTGRES_PEM = '.postgresql/postgresql-key.pem'
+      POSTGRES_DER = '.postgresql/postgresql.pk8'
 
       private_constant :FILTER
 
-
-      def add_additional_properties(java_opts)
-        java_opts
-          .add_system_property('javax.net.ssl.keyStore', keystore)
-          .add_system_property('javax.net.ssl.keyStorePassword', password)
-      end
-
-      def add_client_credentials(pkcs12)
-        shell "#{keytool} -importkeystore -noprompt -destkeystore #{keystore} -deststorepass #{password} " \
-              "-srckeystore #{pkcs12.path} -srcstorepass #{password} -srcstoretype pkcs12" \
-              " -alias #{File.basename(pkcs12)}"
-      end
-
-      def add_trusted_certificate(trusted_certificate)
-        cert = Tempfile.new('ca-cert-')
-        cert.write(trusted_certificate)
-        cert.close
-
-        shell "#{keytool} -import -trustcacerts -cacerts -storepass changeit -noprompt -alias CloudSQLCA -file #{cert.path}"
-      end
+      private_constant :POSTGRES_PEM
+      private_constant :POSTGRES_DER
 
       def keystore
         @droplet.sandbox + 'cloud-sql-keystore.jks'
@@ -97,37 +74,9 @@ module JavaBuildpack
         @droplet.java_home.root + 'bin/keytool'
       end
 
-      def merge_client_credentials(credentials)
-        certificate = write_certificate credentials['sslcert']
-        private_key = write_private_key credentials['sslkey']
-
-        pkcs12 = Tempfile.new('pkcs12-')
-        pkcs12.close
-
-        shell "openssl pkcs12 -export -in #{certificate.path} -inkey #{private_key.path} " \
-              "-name #{File.basename(pkcs12)} -out #{pkcs12.path} -passout pass:#{password}"
-
-        pkcs12
-      end
-
-      def password
-        'cloud-sql-keystore-password'
-      end
-
-      def write_certificate(certificate)
-        Tempfile.open('certificate-') do |f|
-          f.write "#{certificate}\n"
-          f.sync
-          f
-        end
-      end
-
-      def write_private_key(private_key)
-        Tempfile.open('private-key-') do |f|
-          f.write "#{private_key}\n"
-          f.sync
-          f
-        end
+      def create_der
+        shell "openssl pkcs8 -topk8 -inform PEM -in #{qualify_path(POSTGRES_PEM)} " \
+              "-outform DER -out #{qualify_path(POSTGRES_DER)} -v1 PBE-MD5-DES -nocrypt"
       end
 
     end
