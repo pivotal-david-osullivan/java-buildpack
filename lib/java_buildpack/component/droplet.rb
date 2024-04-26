@@ -143,6 +143,23 @@ module JavaBuildpack
         end
       end
 
+      # Copy named resource from a components resources directory to a directory
+      #
+      # @param [Pathname] target_directory the directory to copy to.  Defaults to the component's +sandbox+.
+      # @param [String] file to copy from resources.
+      # @return [Void]
+      def copy_resource(file, target_directory = @sandbox)
+        resources = RESOURCES_DIRECTORY + @component_id
+        
+        if resources.exist?
+          FileUtils.mkdir_p target_directory
+          FileUtils.cp_r(Dir.glob("#{resources}" + file), target_directory)
+          @logger.debug { "Resources #{resources} found" }
+        else
+          @logger.debug { "No resources #{resources} found" }
+        end
+      end
+
       private
 
       RESOURCES_DIRECTORY = Pathname.new(File.expand_path('../../../resources', __dir__)).freeze

@@ -32,9 +32,7 @@ module JavaBuildpack
       # (see JavaBuildpack::Component::BaseComponent#compile)
       def compile
         return unless supports?
-
-        credentials = @application.services.find_service(FILTER, 'sslrootcert', 'sslcert', 'sslkey')['credentials']
-
+        puts "#{'----->'.red.bold} #{'Cloud Security Provider'.blue.bold} enabled for bound service"
       end
 
       # (see JavaBuildpack::Component::BaseComponent#release)
@@ -58,26 +56,8 @@ module JavaBuildpack
       private
 
       FILTER = /csb-google-/.freeze
-      POSTGRES_PEM = '.postgresql/postgresql-key.pem'
-      POSTGRES_DER = '.postgresql/postgresql.pk8'
 
       private_constant :FILTER
-
-      private_constant :POSTGRES_PEM
-      private_constant :POSTGRES_DER
-
-      def keystore
-        @droplet.sandbox + 'cloud-sql-keystore.jks'
-      end
-
-      def keytool
-        @droplet.java_home.root + 'bin/keytool'
-      end
-
-      def create_der
-        shell "openssl pkcs8 -topk8 -inform PEM -in #{qualify_path(POSTGRES_PEM)} " \
-              "-outform DER -out #{qualify_path(POSTGRES_DER)} -v1 PBE-MD5-DES -nocrypt"
-      end
 
     end
   end
