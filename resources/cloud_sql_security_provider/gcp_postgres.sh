@@ -1,4 +1,4 @@
-echo "Running .profile script"
+echo "Running .profile script for PostGres service"
 
 mkdir -p ~/.postgresql/
 
