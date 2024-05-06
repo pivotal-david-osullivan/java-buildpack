@@ -21,6 +21,7 @@ require 'java_buildpack/component/versioned_dependency_component'
 require 'java_buildpack/jre'
 require 'java_buildpack/util/tokenized_version'
 require 'resolv'
+# require 'zip'
 
 module JavaBuildpack
   module Jre
@@ -54,6 +55,48 @@ module JavaBuildpack
         download_tar
         @droplet.copy_resources
         disable_dns_caching if link_local_dns?
+        ls = `ls -al`
+        puts ls
+        ls = `ls -al app/`
+        puts ls
+        pwd = `pwd`
+        puts pwd
+        env = `env`
+        puts env
+        ls = `ls -al /tmp/app`
+        puts ls
+        java = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -version`
+        puts java
+
+        bundle_filename = '/home/vcap/app.jar'
+        puts "About to create #{bundle_filename}"
+        # Zip::File.open(bundle_filename, Zip::File::CREATE) do |zipfile|
+          Dir[File.join('/tmp/app', '**', '**')].each do |file|
+            if file.end_with?('.cached') || file.end_with?('.last_modified') || file.end_with?('.etag')
+            else
+              # puts file
+              # zipfile.add(file.sub('/tmp/app/', ''), file)
+            end
+          end
+        # end
+
+        jar = `cd /tmp/app && zip -qry0 packed.jar . -x "*.last_modified" "*.etag" "*.cached" ".java-buildpack"`
+        puts jar
+
+        ls = `ls -al /tmp/app`
+        puts ls
+
+        java_extract = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -Djarmode=tools -jar /tmp/app/packed.jar extract`
+        puts java_extract
+
+        ls = `ls -al /tmp/app`
+        puts ls
+
+        # unzip = `unzip -l /home/vcap/app.jar`
+        # puts unzip
+
+
+
 
         return if @droplet.java_home.java_8_or_later?
 
@@ -90,6 +133,19 @@ module JavaBuildpack
           LINK_LOCAL.include? IPAddr.new(nameserver_port[0])
         end
       end
+
+      # def bundle
+      #   bundle_filename = "abc.zip"
+      #   FileUtils.rm "abc.zip",:force => true
+      #   dir = "testruby"
+      #   Zip::ZipFile.open(bundle_filename, Zip::ZipFile::CREATE) { |zipfile|
+      #     Dir.foreach(dir) do |item|
+      #       item_path = "#{dir}/#{item}"
+      #       zipfile.add( item,item_path) if File.file?item_path
+      #     end
+      #   }
+      #   File.chmod(0644,bundle_filename)
+      # end
 
     end
     # rubocop: enable Naming/VariableNumber
