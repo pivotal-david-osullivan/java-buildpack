@@ -90,6 +90,7 @@ function util::environment::setup() {
 }
 
 function main() {
+  echo -e "hiiiii"
   local phase
   phase="$(basename "${0}")"
 
