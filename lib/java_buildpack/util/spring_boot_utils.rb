@@ -95,6 +95,14 @@ module JavaBuildpack
         JavaBuildpack::Util::JavaMainUtils.manifest(application)[SPRING_BOOT_VERSION]
       end
 
+      def version_at_least?(application, ver)
+        Gem::Version.new(version_strict(application)).release >= Gem::Version.new(ver)
+      end
+
+      def start_class(application)
+        JavaBuildpack::Util::JavaMainUtils.main_class(application)
+      end
+
       private
 
       SPRING_BOOT_LIB = 'Spring-Boot-Lib'
@@ -102,6 +110,8 @@ module JavaBuildpack
       SPRING_BOOT_VERSION = 'Spring-Boot-Version'
 
       THIN_WRAPPER = 'org.springframework.boot.loader.wrapper.ThinJarWrapper'
+
+      START_CLASS = 'Start-Class'
 
       private_constant :SPRING_BOOT_LIB, :SPRING_BOOT_VERSION
 

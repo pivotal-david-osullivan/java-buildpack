@@ -16,7 +16,7 @@
 # Configuration for components to use in the buildpack
 ---
 containers:
-#  - "JavaBuildpack::Container::SpringBootPerformance"
+  - "JavaBuildpack::Container::SpringBootCDS"
   - "JavaBuildpack::Container::DistZip"
   - "JavaBuildpack::Container::Groovy"
   - "JavaBuildpack::Container::JavaMain"
