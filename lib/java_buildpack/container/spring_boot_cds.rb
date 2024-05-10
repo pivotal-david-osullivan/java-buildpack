@@ -55,8 +55,9 @@ module JavaBuildpack
 
       # (see JavaBuildpack::Component::BaseComponent#compile)
       def compile
+
         with_timing 'Performing CDS Training Run', true do
-          shell "#{java} #{AOT_PROPERTY} #{CONTEXT_PROPERTY} #{CDS_TRAINING_ARCHIVE}#{CDS_ARCHIVE_FILE} -jar #{@application.root}/#{CDS_JAR}"
+          shell "#{java} #{AOT_PROPERTY} #{CONTEXT_PROPERTY} #{CDS_TRAINING_ARCHIVE}#{CDS_ARCHIVE_FILE} -jar #{@application.root}/#{cds_jar}"
         end
       end
 
@@ -77,7 +78,11 @@ module JavaBuildpack
       end
 
       def classpath
-        cp = "-cp $PWD/#{CDS_JAR}"
+        cp = "-cp $PWD/" + cds_jar
+      end
+
+      def cds_jar()
+        "#{@application.details['application_name']}.jar" || "cds-runner.jar"
       end
 
       private
@@ -86,15 +91,13 @@ module JavaBuildpack
 
       AOT_PROPERTY = '-Dspring.aot.enabled=true'
 
-      CDS_JAR = "#{@application.details['application_name']}.jar"
-
       CDS_ARCHIVE_FILE = 'application.jsa'
 
       CDS_TRAINING_ARCHIVE = '-XX:ArchiveClassesAtExit='
 
       CDS_ARCHIVE_PROPERTY = '-XX:SharedArchiveFile='
 
-      private_constant :CDS_ARCHIVE_PROPERTY, :CONTEXT_PROPERTY, :CDS_JAR, :AOT_PROPERTY
+      private_constant :CDS_ARCHIVE_PROPERTY, :CONTEXT_PROPERTY, :AOT_PROPERTY
 
       def java
         @droplet.java_home.root + 'bin/java'

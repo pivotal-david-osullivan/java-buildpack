@@ -86,7 +86,9 @@ module JavaBuildpack
         ls = `ls -al /tmp/app`
         puts ls
 
-        java_extract = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -Djarmode=tools -jar /tmp/app/packed.jar extract`
+
+
+        java_extract = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -Djarmode=tools -jar /tmp/app/packed.jar extract --destination /tmp/app/#{@application.details['application_name']}`
         puts java_extract
 
         ls = `ls -al /tmp/app`
