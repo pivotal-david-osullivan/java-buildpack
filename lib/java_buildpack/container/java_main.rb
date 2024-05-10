@@ -41,7 +41,8 @@ module JavaBuildpack
 
       # (see JavaBuildpack::Component::BaseComponent#detect)
       def detect
-        main_class ? JavaMain.to_s.dash_case : nil
+        nil
+        #main_class ? JavaMain.to_s.dash_case : nil
       end
 
       # (see JavaBuildpack::Component::BaseComponent#compile)

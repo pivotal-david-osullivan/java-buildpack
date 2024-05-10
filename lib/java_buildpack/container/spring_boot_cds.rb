@@ -36,7 +36,7 @@ module JavaBuildpack
       end
 
       def release_text(classpath)
-        start = @spring_boot_utils.start_class(@application)
+        start = JavaBuildpack::Util::JavaMainUtils.main_class(@application)
         [
           @droplet.environment_variables.as_env_vars,
           'eval',
@@ -55,7 +55,9 @@ module JavaBuildpack
 
       # (see JavaBuildpack::Component::BaseComponent#compile)
       def compile
-        shell "#{java} #{AOT_PROPERTY} #{CONTEXT_PROPERTY} #{CDS_TRAINING_ARCHIVE}#{CDS_ARCHIVE_FILE} -jar #{@application.root}/#{CDS_JAR}"
+        with_timing 'Performing CDS Training Run', true do
+          shell "#{java} #{AOT_PROPERTY} #{CONTEXT_PROPERTY} #{CDS_TRAINING_ARCHIVE}#{CDS_ARCHIVE_FILE} -jar #{@application.root}/#{CDS_JAR}"
+        end
       end
 
       protected
@@ -84,7 +86,7 @@ module JavaBuildpack
 
       AOT_PROPERTY = '-Dspring.aot.enabled=true'
 
-      CDS_JAR = 'cds-runner.jar'
+      CDS_JAR = "#{@application.details['application_name']}.jar"
 
       CDS_ARCHIVE_FILE = 'application.jsa'
 

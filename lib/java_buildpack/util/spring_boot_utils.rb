@@ -96,7 +96,7 @@ module JavaBuildpack
       end
 
       def version_at_least?(application, ver)
-        Gem::Version.new(version_strict(application)).release >= Gem::Version.new(ver)
+        Gem::Version.new((version_strict application)).release >= Gem::Version.new(ver)
       end
 
       def start_class(application)
