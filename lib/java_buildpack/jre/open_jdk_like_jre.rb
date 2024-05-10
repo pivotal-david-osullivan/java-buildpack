@@ -68,8 +68,8 @@ module JavaBuildpack
         java = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -version`
         puts java
 
-        bundle_filename = '/home/vcap/app.jar'
-        puts "About to create #{bundle_filename}"
+        # bundle_filename = '/home/vcap/app.jar'
+        puts "About to create CDS archive"
         # Zip::File.open(bundle_filename, Zip::File::CREATE) do |zipfile|
           Dir[File.join('/tmp/app', '**', '**')].each do |file|
             if file.end_with?('.cached') || file.end_with?('.last_modified') || file.end_with?('.etag')
@@ -80,15 +80,15 @@ module JavaBuildpack
           end
         # end
 
-        jar = `cd /tmp/app && zip -qry0 packed.jar . -x "*.last_modified" "*.etag" "*.cached" ".java-buildpack"`
+        jar = `cd /tmp/app && zip -qry0 #{@application.details['application_name']}.jar . -x "*.last_modified" "*.etag" "*.cached" ".java-buildpack"`
         puts jar
 
         ls = `ls -al /tmp/app`
         puts ls
 
 
-
-        java_extract = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -Djarmode=tools -jar /tmp/app/packed.jar extract --destination /tmp/app/#{@application.details['application_name']}`
+        puts "About to extract CDS archive into #{@application.details['application_name']} folder"
+        java_extract = `/tmp/app/.java-buildpack/open_jdk_jre/bin/java -Djarmode=tools -jar /tmp/app/#{@application.details['application_name']}.jar extract --destination /tmp/app/}`
         puts java_extract
 
         ls = `ls -al /tmp/app`
